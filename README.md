@@ -1,70 +1,73 @@
-# SystemLore
+# React + TypeScript + Vite
 
-> **Contextual answers from your engineering knowledge base — docs, code, diagrams, and incidents — all in one place.**
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## What is SystemLore?
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-SystemLore is a developer-focused RAG (Retrieval-Augmented Generation) system that ingests your team's technical documentation, architecture diagrams, code repositories, and incident reports — then lets you query all of it in plain language.
+## React Compiler
 
-Built to reduce onboarding time, accelerate troubleshooting, and surface institutional knowledge that usually stays buried.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
----
+## Expanding the ESLint configuration
 
-## The Three Pillars
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-| Use Case                    | What it does                                                 |
-| --------------------------- | ------------------------------------------------------------ |
-| **Contextual Q&A**          | Ask questions against your docs and architecture diagrams    |
-| **Faster Onboarding**       | New engineers self-serve instead of interrupting senior devs |
-| **Smarter Troubleshooting** | Surface past incident patterns and verified resolutions      |
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
----
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-## Supported Data Sources
-
-- **Docs** — Markdown, HTML, PDF, OpenAPI/Swagger specs
-- **Diagrams** — PNG, SVG (multimodal vision indexing)
-- **Code Repos** — TypeScript, Python, Go, Java + PR summaries
-- **Incidents** — PagerDuty alerts, Jira tickets, postmortem PDFs
-
----
-
-## Tech Stack
-
-| Layer         | Technology                            |
-| ------------- | ------------------------------------- |
-| Frontend      | React + TypeScript                    |
-| Backend & DB  | Convex (serverless, real-time)        |
-| Vector Search | Convex Vector Search                  |
-| Embeddings    | `text-embedding-004` (Google)         |
-| LLM           | `gemini-2.5-flash` / `gemini-2.5-pro` |
-| Auth          | Clerk                                 |
-
----
-
-## Quick Start
-
-```bash
-# Ingest a document or diagram
-npx systemlore ingest ./docs/architecture-overview.md --type doc
-npx systemlore ingest ./diagrams/vpc-network.png --type diagram
-
-# Query your knowledge base
-npx systemlore query "How does the VPC network connect to our Convex database?"
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-Answers come back with source citations and diagram previews — no hallucinated context.
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
----
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-## Status
-
-🚧 **Early development** — core ingestion pipeline and query interface are actively being built.
-
----
-
-## Contributing
-
-Issues and PRs are welcome. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for guidelines.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
